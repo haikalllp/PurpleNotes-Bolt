@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light mode variables */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 262.1 83.3% 57.8%; /* purple-500 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96.1%; /* gray-100 */
+    --secondary-foreground: 215.4 16.3% 46.9%; /* gray-600 */
+    --muted: 210 40% 96.1%; /* gray-100 */
+    --muted-foreground: 215.4 16.3% 46.9%; /* gray-600 */
+    --accent: 210 40% 96.1%; /* gray-100 */
+    --accent-foreground: 222.2 47.4% 11.2%; /* gray-900 */
+    --destructive: 0 84.2% 60.2%; /* red-500 */
+    --destructive-foreground: 0 0% 100%;
+    --border: 214.3 31.8% 91.4%; /* gray-200 */
+    --input: 214.3 31.8% 91.4%; /* gray-200 */
+    --ring: 263.4 70% 50.4%; /* purple-400 */
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* Dark mode variables */
+    --background: 222.2 84% 4.9%; /* gray-900 */
+    --foreground: 210 40% 98%; /* gray-50 */
+    --card: 217.2 32.6% 17.5%; /* gray-800 */
+    --card-foreground: 210 40% 98%; /* gray-50 */
+    --popover: 217.2 32.6% 17.5%; /* gray-800 */
+    --popover-foreground: 210 40% 98%; /* gray-50 */
+    --primary: 263.4 70% 50.4%; /* purple-400 */
+    --primary-foreground: 222.2 47.4% 11.2%; /* gray-900 */
+    --secondary: 217.2 32.6% 27.5%; /* gray-700 */
+    --secondary-foreground: 210 40% 98%; /* gray-50 */
+    --muted: 217.2 32.6% 27.5%; /* gray-700 */
+    --muted-foreground: 215 20.2% 65.1%; /* gray-400 */
+    --accent: 217.2 32.6% 27.5%; /* gray-700 */
+    --accent-foreground: 210 40% 98%; /* gray-50 */
+    --destructive: 0 62.8% 50.6%; /* red-400 */
+    --destructive-foreground: 210 40% 98%; /* gray-50 */
+    --border: 217.2 32.6% 27.5%; /* gray-700 */
+    --input: 217.2 32.6% 27.5%; /* gray-700 */
+    --ring: 262.1 83.3% 57.8%; /* purple-500 */
+  }
+}
+
+@layer base {
+  * {
+    /* Use the CSS variable directly for border color */
+    border-color: hsl(var(--border));
+  }
+  body {
+    /* Apply background and text colors using CSS variables */
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Add Inter font */
+body {
+  font-family: 'Inter', sans-serif;
+}
