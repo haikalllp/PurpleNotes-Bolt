@@ -44,8 +44,8 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, onDelete, onReminderDue }) =>
       setProgress(100);
       setTimeRemaining('Reminder due!');
       setIsDue(true);
-      // Use the state value directly in the condition
-      if (!reminderTriggered) {
+      // Check both the component state trigger AND the persistent dismissal flag
+      if (!reminderTriggered && !note.reminderDismissed) {
         onReminderDue(note);
         setReminderTriggered(true);
       }
@@ -74,8 +74,8 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, onDelete, onReminderDue }) =>
         setProgress(100);
         setTimeRemaining('Reminder due!');
         setIsDue(true);
-        // Use the state value directly in the condition
-        if (!reminderTriggered) {
+        // Check both the component state trigger AND the persistent dismissal flag
+        if (!reminderTriggered && !note.reminderDismissed) {
           onReminderDue(note);
           setReminderTriggered(true);
         }

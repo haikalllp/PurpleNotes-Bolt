@@ -17,6 +17,7 @@ export interface Note {
   reminderEnabled: boolean; // Is reminder set?
   reminderDateTime: string; // ISO string for reminder time, empty if not enabled
   createdAt: string; // ISO string for creation time
+  reminderDismissed?: boolean; // Flag to track if the reminder popup was dismissed
 }
 
 /**

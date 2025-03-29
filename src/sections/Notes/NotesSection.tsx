@@ -32,9 +32,19 @@ const NotesSection: React.FC = () => {
     setPopupNote(note); // Set the note to be displayed in the popup
   };
 
-  // Handler to close the popup
+  // Handler to close the popup and mark reminder as dismissed
   const handleClosePopup = () => {
-    setPopupNote(null);
+    if (popupNote) {
+      // Update the specific note in the notes array to mark as dismissed
+      setNotes(prevNotes =>
+        prevNotes.map(note =>
+          note.id === popupNote.id
+            ? { ...note, reminderDismissed: true }
+            : note
+        )
+      );
+    }
+    setPopupNote(null); // Close the popup visually
   };
 
   return (
