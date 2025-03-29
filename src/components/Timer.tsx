@@ -1,23 +1,33 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, RotateCcw, Coffee, Briefcase } from 'lucide-react';
+import TimerNotificationPopup from './TimerNotificationPopup'; // Import the new popup
 
 type TimerMode = 'work' | 'break';
 
+interface PopupState {
+  visible: boolean;
+  message: string;
+  mode: TimerMode; // The mode that just ended
+}
+
 const Timer: React.FC = () => {
   const [mode, setMode] = useState<TimerMode>('work');
-  const [workDuration, setWorkDuration] = useState<number>(25 * 60); // Default 25 minutes
-  const [breakDuration, setBreakDuration] = useState<number>(5 * 60); // Default 5 minutes
+  const [workDuration, /* setWorkDuration */] = useState<number>(25 * 60); // Default 25 minutes (setter commented out)
+  const [breakDuration, /* setBreakDuration */] = useState<number>(5 * 60); // Default 5 minutes (setter commented out)
   const [timeLeft, setTimeLeft] = useState<number>(workDuration);
   const [isRunning, setIsRunning] = useState<boolean>(false);
+  const [popupState, setPopupState] = useState<PopupState | null>(null); // State for the custom popup
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const notificationRef = useRef<Notification | null>(null);
+  // const notificationRef = useRef<Notification | null>(null); // Removed
 
+  /* // Removed notification permission request useEffect
   useEffect(() => {
     // Request notification permission on component mount
     if ('Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
       Notification.requestPermission();
     }
   }, []);
+  */
 
   useEffect(() => {
     setTimeLeft(mode === 'work' ? workDuration : breakDuration);
@@ -54,24 +64,27 @@ const Timer: React.FC = () => {
         clearInterval(intervalRef.current);
       }
       // Close notification if component unmounts
-      if (notificationRef.current) {
-        notificationRef.current.close();
-      }
+      // if (notificationRef.current) { // Removed notification cleanup
+      //   notificationRef.current.close();
+      // }
     };
   }, [isRunning]);
 
   const handleTimerEnd = () => {
-    const message = mode === 'work' ? "Time for a break!" : "Break's over! Back to work.";
-    // Show browser notification
-    if ('Notification' in window && Notification.permission === 'granted') {
-       notificationRef.current = new Notification("Purple Notes Timer", { body: message });
-    } else {
-        alert(message); // Fallback for browsers without notification support or permission denied
-    }
+    const endedMode = mode; // Capture the mode that just ended
+    const message = endedMode === 'work' ? "It's break time!" : "Time to go back to work!";
+
+    // Show custom popup
+    setPopupState({ visible: true, message, mode: endedMode });
+
     // Automatically switch mode
     setMode(prevMode => prevMode === 'work' ? 'break' : 'work');
     // Optionally auto-start the next timer (or require manual start)
     // setIsRunning(true);
+  };
+
+  const handleClosePopup = () => {
+    setPopupState(null);
   };
 
   const toggleTimer = () => {
@@ -164,6 +177,15 @@ const Timer: React.FC = () => {
         />
       </div>
       */}
+
+      {/* Render the custom popup */}
+      {popupState?.visible && (
+        <TimerNotificationPopup
+          mode={popupState.mode === 'work' ? 'break' : 'work'} // Pass the *next* mode for icon/title
+          message={popupState.message}
+          onClose={handleClosePopup}
+        />
+      )}
     </div>
   );
 };
