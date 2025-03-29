@@ -12,18 +12,23 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, onDelete, onReminderDue }) =>
   const [progress, setProgress] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState('');
   const [isDue, setIsDue] = useState(false);
+  const [reminderTriggered, setReminderTriggered] = useState(false); // Track if reminder has been triggered
 
   useEffect(() => {
     if (!note.reminderEnabled || !note.reminderDateTime) {
       setProgress(0);
       setTimeRemaining('');
       setIsDue(false);
+      setReminderTriggered(false); // Reset trigger state if reminder changes
       return;
     }
 
     const reminderTime = new Date(note.reminderDateTime).getTime();
     const creationTime = new Date(note.createdAt).getTime();
     const totalDuration = reminderTime - creationTime;
+
+    // Reset trigger state when dependencies change (e.g., note content changes but reminder stays same)
+    setReminderTriggered(false);
 
     const intervalId = setInterval(() => {
       const now = Date.now();
@@ -33,8 +38,11 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, onDelete, onReminderDue }) =>
         setProgress(100);
         setTimeRemaining('Reminder due!');
         setIsDue(true);
-        onReminderDue(note); // Notify parent component
-        clearInterval(intervalId);
+        if (!reminderTriggered) { // Only trigger once
+          onReminderDue(note); // Notify parent component
+          setReminderTriggered(true);
+        }
+        clearInterval(intervalId); // Clear interval once due
       } else {
         const elapsed = now - creationTime;
         const currentProgress = totalDuration > 0 ? Math.min(100, Math.max(0, (elapsed / totalDuration) * 100)) : 0;
@@ -53,14 +61,20 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, onDelete, onReminderDue }) =>
     // Initial calculation
     const now = Date.now();
     const timeDiff = reminderTime - now;
-    if (timeDiff <= 0) {
+    // Initial check (outside interval)
+    const initialNow = Date.now();
+    const initialTimeDiff = reminderTime - initialNow;
+    if (initialTimeDiff <= 0) {
         setProgress(100);
         setTimeRemaining('Reminder due!');
         setIsDue(true);
-        onReminderDue(note);
-        clearInterval(intervalId);
+        if (!reminderTriggered) { // Check trigger state on initial load too
+            onReminderDue(note);
+            setReminderTriggered(true);
+        }
+        // No need to clear interval here as it hasn't started yet if due immediately
     } else {
-        const elapsed = now - creationTime;
+        const elapsed = initialNow - creationTime;
         const currentProgress = totalDuration > 0 ? Math.min(100, Math.max(0, (elapsed / totalDuration) * 100)) : 0;
         setProgress(currentProgress);
         const seconds = Math.floor((timeDiff / 1000) % 60);
