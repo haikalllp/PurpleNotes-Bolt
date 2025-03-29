@@ -17,6 +17,7 @@ const Timer: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState<number>(workDuration);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [popupState, setPopupState] = useState<PopupState | null>(null); // State for the custom popup
+  const [timerEndedTriggered, setTimerEndedTriggered] = useState<boolean>(false); // Flag to prevent multiple triggers
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   // const notificationRef = useRef<Notification | null>(null); // Removed
 
@@ -32,6 +33,7 @@ const Timer: React.FC = () => {
   useEffect(() => {
     setTimeLeft(mode === 'work' ? workDuration : breakDuration);
     setIsRunning(false); // Stop timer when mode changes
+    setTimerEndedTriggered(false); // Reset trigger flag when mode changes
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
@@ -46,7 +48,10 @@ const Timer: React.FC = () => {
             clearInterval(intervalRef.current!);
             intervalRef.current = null;
             setIsRunning(false);
-            handleTimerEnd();
+            if (!timerEndedTriggered) { // Check the flag before calling
+              handleTimerEnd();
+              setTimerEndedTriggered(true); // Set the flag
+            }
             return 0;
           }
           return prevTime - 1;
