@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Sun, Moon, NotebookPen } from 'lucide-react';
 import Timer from './components/Timer';
 // Import sections when they are created
-import NotesSection from './sections/NotesSection';
-import TasksSection from './sections/Tasks/TasksSection'; // Corrected path
+import NotesSection from './sections/Notes/NotesSection'; // Updated path
+import TasksSection from './sections/Tasks/TasksSection';
 // import ClipboardSection from './sections/ClipboardSection';
 
 type Theme = 'light' | 'dark';
