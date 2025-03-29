@@ -1,23 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react'; // Removed unused useEffect
 import { Note } from '../../types';
 import useLocalStorage from '../../hooks/useLocalStorage';
 import AddNoteForm from './AddNoteForm';
 import NoteCard from './NoteCard';
+import NotificationPopup from '../../components/NotificationPopup'; // Import the custom popup
 
 const NOTES_STORAGE_KEY = 'purple-notes-notes';
 
 const NotesSection: React.FC = () => {
   const [notes, setNotes] = useLocalStorage<Note[]>(NOTES_STORAGE_KEY, []);
-  const [notificationPermission, setNotificationPermission] = React.useState(Notification.permission);
+  const [popupNote, setPopupNote] = useState<Note | null>(null); // State for the note to show in popup
 
-  // Effect to request notification permission on mount if not already granted/denied
-  useEffect(() => {
-    if (Notification.permission === 'default') {
-      Notification.requestPermission().then(permission => {
-        setNotificationPermission(permission);
-      });
-    }
-  }, []);
+  // Remove effect for browser notification permission
 
   const handleAddNote = (noteData: Omit<Note, 'id' | 'createdAt'>) => {
     const newNote: Note = {
@@ -32,37 +26,19 @@ const NotesSection: React.FC = () => {
     setNotes(notes.filter(note => note.id !== id));
   };
 
+  // Updated handler to set state for the popup
   const handleReminderDue = (note: Note) => {
-    console.log('Reminder due for note:', note.id, notificationPermission);
-    if (notificationPermission === 'granted') {
-      const notificationBody = note.content.length > 50
-        ? `${note.content.substring(0, 50)}...`
-        : note.content;
+    console.log('Reminder due for note:', note.id);
+    setPopupNote(note); // Set the note to be displayed in the popup
+  };
 
-      new Notification(note.title || 'Note Reminder', {
-        body: notificationBody || 'Your reminder is due!',
-        icon: '/notebook-pen.svg', // Optional: Add an icon path relative to public folder
-        tag: note.id, // Use note ID as tag to prevent duplicate notifications if component re-renders
-      });
-    } else if (notificationPermission === 'default') {
-      // Maybe prompt user again or guide them? For now, just log.
-      console.warn('Notification permission not granted. Requesting again...');
-      Notification.requestPermission().then(permission => {
-        setNotificationPermission(permission);
-        if (permission === 'granted') {
-          // Retry notification immediately after permission granted
-          handleReminderDue(note);
-        }
-      });
-    } else {
-      // Permission denied - can't show notification
-      console.error('Notification permission denied.');
-      // Optionally, provide feedback to the user that notifications are blocked.
-    }
+  // Handler to close the popup
+  const handleClosePopup = () => {
+    setPopupNote(null);
   };
 
   return (
-    <section aria-labelledby="notes-heading" className="space-y-6">
+    <section aria-labelledby="notes-heading" className="space-y-6 relative"> {/* Add relative positioning */}
       <h2 id="notes-heading" className="text-2xl font-semibold text-purple-700 dark:text-purple-300">
         Notes
       </h2>
@@ -85,6 +61,14 @@ const NotesSection: React.FC = () => {
           ))
         )}
       </div>
+
+      {/* Render the popup conditionally */}
+      {popupNote && (
+        <NotificationPopup
+          note={popupNote}
+          onClose={handleClosePopup}
+        />
+      )}
     </section>
   );
 };
