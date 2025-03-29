@@ -3,7 +3,7 @@ import { Sun, Moon, NotebookPen } from 'lucide-react';
 import Timer from './components/Timer';
 // Import sections when they are created
 import NotesSection from './sections/NotesSection';
-// import TasksSection from './sections/TasksSection';
+import TasksSection from './sections/Tasks/TasksSection'; // Corrected path
 // import ClipboardSection from './sections/ClipboardSection';
 
 type Theme = 'light' | 'dark';
@@ -56,7 +56,7 @@ function App() {
       <main className="container mx-auto px-4 py-8 space-y-12">
         {/* Placeholder for sections - uncomment when ready */}
         <NotesSection />
-        {/* <TasksSection /> */}
+        <TasksSection />
         {/* <ClipboardSection /> */}
 
         {/* Remove temporary content */}
